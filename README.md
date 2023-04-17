@@ -1,2 +1,3 @@
 # classificationEcoFor
-Classification des ecosystèmes forestiers
+
+Pipeline pour créer une classification des ecosystèmes forestiers.
