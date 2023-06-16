@@ -5,7 +5,7 @@
 \alias{species_var}
 \title{Species abundances}
 \format{
-A data frame with 8,581 rows and 253 columns
+A data frame with 8,581 rows and 252 columns
 }
 \usage{
 species_var

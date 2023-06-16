@@ -24,7 +24,7 @@
 
 #' Species abundances
 #'
-#' @format A data frame with 8,581 rows and 253 columns
+#' @format A data frame with 8,581 rows and 252 columns
 #'
 "species_var"
 

@@ -3,9 +3,9 @@ Type: Package
 Title: Analyse for XXX
 Authors@R: 
   person("Kevin", "Cazelles", role = c("aut", "cre"), email = "kevin.cazelles@gmail.com", comment = c(ORCID = "0000-0001-6619-9874"))
-Version: 0.0.1
-Date: 2023-04-16
-Description: Code to reproduce XXX
+Version: 0.0.1.9000
+Date: 2023-06-16
+Description: Code to reproduce the anlaysis by Chalumeau and colleagues.
 Depends: R (>= 4.2)
 Additional_repositories: 
     https://inla.r-inla-download.org/R/stable/
@@ -13,9 +13,9 @@ Imports:
     cli,
     dplyr,
     sf,
-    targets,
-    terra
+    vegan
 Suggests:
+    targets,
     foreign
 License: MIT + file LICENSE
 Encoding: UTF-8
