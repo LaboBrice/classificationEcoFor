@@ -2,13 +2,61 @@
 % Please edit documentation in R/chalumeau.R
 \name{chalumeau}
 \alias{chalumeau}
+\alias{doRDA}
+\alias{doKMeans}
+\alias{getData}
 \title{Reproduce Chalumeau analysis}
 \usage{
-chalumeau(bc.exp = 1)
+chalumeau(bc.exp = 1, fwd.sel = FALSE)
+
+doRDA(env, spc, rda_formula = NULL, bc.exp = 1, fwd.sel = FALSE)
+
+doKMeans(
+  res_rda,
+  naxis = 10,
+  max_grp = 30,
+  km_method = c("cascade", "silhouette"),
+  ...
+)
+
+getData()
 }
 \arguments{
 \item{bc.exp}{Box-Cox exponent (see \code{\link[=boxCoxChord]{boxCoxChord()}}).}
+
+\item{fwd.sel}{A logical. Should a forward selection be performed?}
+
+\item{env}{Environment data.}
+
+\item{spc}{Species data.}
+
+\item{rda_formula}{RDA formula. Default is set to \code{NULL}, which means that
+all variables are used in the model.}
+
+\item{res_rda}{RDA output.}
+
+\item{naxis}{Number of axis.}
+
+\item{max_grp}{maximum number of groups.}
+
+\item{km_method}{K-means method.}
+
+\item{...}{Further argiments forwarded to \code{\link[vegan:cascadeKM]{vegan::cascadeKM()}}.}
 }
 \description{
 Reproduce Chalumeau analysis
+}
+\section{Functions}{
+\itemize{
+\item \code{doRDA()}: Perform RDA.
+
+\item \code{doKMeans()}: Perform K means.
+
+\item \code{getData()}: Take raw data and return a list including all the data and the enviroenemtn data (scaled where needed) and the species data.
+
+}}
+\examples{
+res <- chalumeau()
+ress <- res$rda |> summary()
+
 }

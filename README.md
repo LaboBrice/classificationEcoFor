@@ -1,12 +1,22 @@
 # classificationEcoFor
 
-Pipeline pour créer une classification des ecosystèmes forestiers.
+> Data pipeline to generate a potential classification of forest ecosystems in Quebec.
+
+> Pipeline pour créer une classification possible des ecosystèmes forestiers québécois.
+
 
 
 ## Installation
 
-1. clone the repo 
-2. use `devtools::load_all()`
+1. clone this repository,
+2. open R and set the working directory to the directory you've just cloned,
+2. use `devtools::load_all()`.
+
+
+```R
+devtools::build_vignettes()
+```
+
 
 
 ## Export raw data 

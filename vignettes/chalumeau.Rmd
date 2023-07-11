@@ -1,0 +1,134 @@
+---
+title: "Reproducing Chalumeau et al."
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Reproducing Chalumeau et al.}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(classEcoFor)
+library(dplyr)
+library(mapview)
+library(vegan)
+```
+
+# Chalumeau et al. 
+
+```{R main}
+res <- chalumeau(bc.exp = 0.25)
+```
+
+```{R plot_rda, fig.width = 9.5, fig.height = 9}
+plot(res$rda)
+plot(res$km_ssi)
+plot(res$km_cal)
+plot(res$km_sil)
+```
+
+
+```{R maps, fig.width = 9.5}
+plot_location_res <- plot_location |>
+  filter(CLE_ECO %in% res$data$full$CLE_ECO) |>
+  mutate(partition_ssi_02 = res$km_ssi$partition[, 1]) |>
+  mutate(partition_ssi_10 = res$km_ssi$partition[, 9]) |>
+  mutate(partition_cal_02 = res$km_cal$partition[, 1]) |>
+  mutate(partition_cal_10 = res$km_cal$partition[, 9])
+mapview(plot_location_res, zcol = "partition_ssi_02")
+mapview(plot_location_res, zcol = "partition_ssi_10")
+mapview(plot_location_res, zcol = "partition_cal_02")
+mapview(plot_location_res, zcol = "partition_cal_10")
+```
+
+La classification n'est pas vraiment ce à quoi on s'attend.
+
+```{R maps02, fig.width = 9.5}
+res2 <- cascadeKM(
+    res$data$env |> select(TMA, PMA), 
+    inf.gr = 2, 
+    sup.gr = 10)
+plot_location_res2 <- plot_location |>
+  filter(CLE_ECO %in% res$data$full$CLE_ECO) |>
+  mutate(partition_02 = res2$partition[, 1]) |>
+  mutate(partition_10 = res2$partition[, 9])
+mapview(plot_location_res2, zcol = "partition_02")
+mapview(plot_location_res2, zcol = "partition_10")
+```
+
+Alors qu'un partage sur les données de précipitation et de température fait bien ressortir des groupes spatialisés. 
+
+
+```{R maps03, fig.width = 9.5}
+res2 <- cascadeKM(
+    res$data$env  |> select(TMA, PMA, ALTITUDE), 
+    inf.gr = 2, 
+    sup.gr = 10)
+plot_location_res2 <- plot_location |>
+  filter(CLE_ECO %in% res$data$full$CLE_ECO) |>
+  mutate(partition_02 = res2$partition[, 1]) |>
+  mutate(partition_10 = res2$partition[, 9])
+mapview(plot_location_res2, zcol = "partition_02")
+mapview(plot_location_res2, zcol = "partition_10")
+```
+
+
+
+# Limitations
+
+Pour résumé l'approche finale retenue dans les travaux d'Aurélie Chalumeau:
+
+1. RDA (voir https://r.qcbs.ca/workshop10/book-en/redundancy-analysis.html) avec R^2^-adjusted entre 20 et 25%
+  - transformation d'Hellinger (meilleur R^2^ ajusté) pour les données d'espèces
+  - les variables d'environnement retenues sont:
+    - l'altitude (`ALTI`);
+    - la température (`TMA`);
+    - le type d'humus (`mor`, `tourbe`, `mull`, `moder`, considérés comme indépendants dans l'analyse originale);
+    - `s_plat` (une des valeurs possible de `SITUATION`);
+    - l'épaisseur de l'humus (`HUMEPAI`);
+    - les précipitations (`PMA`);
+    - la force de la pente (`FORCPENT`);
+
+2. Un K-means (classification non supervisée) utilisant les 10 premiers axes de la RDA, avec une augmentation progressive du nombre de groupe de 2 à 30 groupes, les indices utilisés sont:
+  - *simple structure index* (ssi),
+  - *average silhouette width* (silhouette),
+  - *total within sum of square* (wss).
+
+Au-delà de quelques interrogations techniques (e.g. est-ce une bonne idée de rendre des variables indépendantes alors qu'elles ne le sont pas?), il faut comprendre qu'ici la classification non supervisée est fait sur les 10 premiers axes d'une PCA d'une matrice prédite. Les méthodes de classification performent cependant mieux sur un grand nombre d'axes et il est difficile de comprendre les raisons pour lesquelles on se limite ici, surtout que ces dix premiers axes représentent un faible pourcentage de l'inertie totale de la matrice prédite. Il sera plus difficile de déterminer quels axes sont les plus importants pour assurer une classification de qualité, il est cependant possible de comparer différentes classification utilisant différents axes.
+
+<br>
+
+
+# Pistes de réflexion 
+
+## Quelques considérations sur la classification 
+
+Il y a 2 grandes options types de classification: supervisée et non-supervisée. Les méthodes de K-means employées ici font partie des méthodes de classification non-supervisée : on cherche les $n$ groupes basés sur une dissimilarité $d()$ qui sur minimise une fonction d'objectif donnée. En générale, la dissimilarité est une la distance euclidienne au barycentre du groupe et on on minimise l'inertie intra-groupe (en suivant, par exemple, Ward 1963). 
+
+Pour les raisons évoquées plus haut, il sera sûrement plus intéressant de travailler sur la dissimilarité et directement sur les données utilisées. 
+Par exemple, il serait possible de regarder une classification basée sur:
+- seulement les variables environnementales
+- seulement les données d'espèces
+- les deux combinées
+
+Il est aussi tout à fait possible de faire une approche itérative, par exemple, 
+faire une première classification basée sur les variables climatiques et puis sur chaque sous ensemble identifié, appliquée une deuxième approche (e.g. un deuxième Kmean) avec un autre ensemble de variable.
+
+Il est possible aussi d'utiliser cette première approche comme une sort de tag automatique et d'essayer de voir si on peut trouver des critères pour bien expliquer ces critères, en utilisant par exemple des *random forests*.
+
+Aussi, il semble que l'utilisation de méthodes de classifications supervisées n'ait pas été considéré. Or la classification produite est révisée dans une seconde étape afin de déterminer si elle fait du sens écologiquement. Ne serai-t-il pas alors plus intéressant de généré une classification sur a base de connaissance des experts et ensuite d'utilisée un pipeline de données pour trouvées à quel groupe appartient telle ou telle placette. 
+
+
+
+## Données environnementales 
+
+Dans l'étude de Chalumeau et al., sont inclues températures et précipitations. Les données climatiques disponibles (e.g. <https://www.worldclim.org/data/bioclim.html>) peuvent nous fournir bien d'autres variables (e.g. *growing degree days*, *Precipitation of Warmest Quarter*). Ces variables sont corrélées entre elles, mais cela a une importance relative car une corrélation supplémentaire peut amener de l'information supplémentaire et participer à l'amélioration de la qualité de la classification.
+
+Il est aussi important de s'interroger sur les variables qualitatives, si chaque catégorie il est préférable de ne pas mettre de hiérarchie alors il faut utiliser un ensemble de variables booléenne, en revanche, si il y a des proximité plus ou moins grande entre les différentes catégories, il peut alors être judicieux de le répercuter dans la mesure utilisé et faire une colonne avec des valeurs judicieusement choisies.  
