@@ -1,7 +1,9 @@
 # History files
+docs
 .Rhistory
 .Rapp.history
 resources
+.vscode
 
 # Session Data files
 .RData
@@ -38,3 +40,6 @@ vignettes/*.pdf
 
 # R Environment Variables
 .Renviron
+inst/doc
+/doc/
+/Meta/

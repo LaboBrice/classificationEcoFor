@@ -1,3 +1,5 @@
 ^resources$
 ^LICENSE\.md$
-^reources$
+^doc$
+^docs$
+^Meta$
