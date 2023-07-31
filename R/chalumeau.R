@@ -8,9 +8,9 @@
 #' ress <- res$rda |> summary()
 #'
 #' @export
-chalumeau <- function(bc.exp = 1, fwd.sel = FALSE) {
+chalumeau <- function(bc.exp = 0.25, fwd.sel = FALSE) {
     inputdata <- getData()
-    form <- "matcom ~ ALTI + TMA + PMA + HUMUS + HUMEPAI + SITUATION + FORCPENT"
+    form <- "matcom ~ ALTITUDE + TMA + PMA + HUMUS + HUMEPAI + FLAT_SLOPE + FORCPENT"
     output01 <- doRDA(inputdata$env, inputdata$spc, form, bc.exp, fwd.sel)
     output02 <- doKMeans(output01,
         max_grp = 30, km_method = "cascade",
@@ -44,7 +44,7 @@ doRDA <- function(env, spc, rda_formula = NULL, bc.exp = 1, fwd.sel = FALSE) {
 
     cli_progress_step("Perform RDA")
 
-    if (is.null(rda_formula)) {
+    if (!is.null(rda_formula)) {
         res <- rda(as.formula(rda_formula), env)
     } else {
         res <- rda(matcom ~ ., env)
@@ -76,7 +76,6 @@ doRDA <- function(env, spc, rda_formula = NULL, bc.exp = 1, fwd.sel = FALSE) {
 #' @param ... Further argiments forwarded to [vegan::cascadeKM()].
 doKMeans <- function(res_rda, naxis = 10, max_grp = 30,
                      km_method = c("cascade", "silhouette"), ...) {
-
     cli_progress_step("Perform Kmeans ({km_method})")
     scr <- scores(res_rda,
         choices = seq_len(naxis), scaling = 1,
@@ -108,7 +107,10 @@ getData <- function() {
     spc <- dat[nmy]
     env <- dat[nmx] |>
         select(
-            -c("LONGITUDE", "LATITUDE", "PERTURB", "REG_ECOL")
+            -c(
+                "LONGITUDE", "LATITUDE", "PERTURB", "REG_ECOL", "CLE_ECOnum",
+                "CLE_ECOcar", "CLE_ECO"
+            )
         ) |>
         mutate(across(all_of(trs), scale))
     return(list(full = dat, env = env, spc = spc))
@@ -132,6 +134,9 @@ prepareData <- function() {
             classEcoFor::climatic_var,
             by = join_by(CLE_ECO)
         ) |>
+        # this is the only situation value used in Chalumeau et al. 
+        # we create an adhoc variable instead of including all SITUATION values
+        mutate(FLAT_SLOPE = (SITUATION == 0) * 1) |>
         left_join(classEcoFor::species_var, by = join_by(CLE_ECO))
     # checking data
     idalt <- which(dat$ALTI != dat$ALTITUDE)

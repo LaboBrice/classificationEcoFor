@@ -21,31 +21,36 @@ library(mapview)
 library(vegan)
 ```
 
+
 # Chalumeau et al. 
 
+
+## Analyse
+
 ```{R main}
-res <- chalumeau(bc.exp = 0.25)
+res <- chalumeau()
 ```
 
 ```{R plot_rda, fig.width = 9.5, fig.height = 9}
-plot(res$rda)
+triplot_rda(res$rda)
 plot(res$km_ssi)
 plot(res$km_cal)
 plot(res$km_sil)
 ```
 
+## Carte des groupes
 
 ```{R maps, fig.width = 9.5}
 plot_location_res <- plot_location |>
   filter(CLE_ECO %in% res$data$full$CLE_ECO) |>
   mutate(partition_ssi_02 = res$km_ssi$partition[, 1]) |>
-  mutate(partition_ssi_10 = res$km_ssi$partition[, 9]) |>
+  mutate(partition_ssi_09 = res$km_ssi$partition[, 8]) |>
   mutate(partition_cal_02 = res$km_cal$partition[, 1]) |>
-  mutate(partition_cal_10 = res$km_cal$partition[, 9])
+  mutate(partition_cal_09 = res$km_cal$partition[, 8])
 mapview(plot_location_res, zcol = "partition_ssi_02")
-mapview(plot_location_res, zcol = "partition_ssi_10")
+mapview(plot_location_res, zcol = "partition_ssi_09")
 mapview(plot_location_res, zcol = "partition_cal_02")
-mapview(plot_location_res, zcol = "partition_cal_10")
+mapview(plot_location_res, zcol = "partition_cal_09")
 ```
 
 La classification n'est pas vraiment ce à quoi on s'attend.
@@ -58,17 +63,16 @@ res2 <- cascadeKM(
 plot_location_res2 <- plot_location |>
   filter(CLE_ECO %in% res$data$full$CLE_ECO) |>
   mutate(partition_02 = res2$partition[, 1]) |>
-  mutate(partition_10 = res2$partition[, 9])
+  mutate(partition_09 = res2$partition[, 9])
 mapview(plot_location_res2, zcol = "partition_02")
-mapview(plot_location_res2, zcol = "partition_10")
+mapview(plot_location_res2, zcol = "partition_09")
 ```
 
 Alors qu'un partage sur les données de précipitation et de température fait bien ressortir des groupes spatialisés. 
 
-
 ```{R maps03, fig.width = 9.5}
 res2 <- cascadeKM(
-    res$data$env  |> select(TMA, PMA, ALTITUDE), 
+    res$data$env |> select(TMA, PMA, ALTITUDE), 
     inf.gr = 2, 
     sup.gr = 10)
 plot_location_res2 <- plot_location |>
@@ -76,9 +80,32 @@ plot_location_res2 <- plot_location |>
   mutate(partition_02 = res2$partition[, 1]) |>
   mutate(partition_10 = res2$partition[, 9])
 mapview(plot_location_res2, zcol = "partition_02")
-mapview(plot_location_res2, zcol = "partition_10")
+mapview(plot_location_res2, zcol = "partition_09")
 ```
 
+## Détails des groupes issus de l'analyse de Chalumeau et al.
+
+res$km_cal$partition[,8] |> table()
+mapview(
+    plot_location_res |> filter(partition_cal_09 == 1), 
+    zcol = "partition_09"
+  )
+
+
+
+# Remarque sur la réplication de l'étude
+
+Dans les données de l'étude, les situaion aussi et seulement le niveau 0 est utilisé voici les valeurs: 
+
+- `SITUATION=="0"`: plat
+- `SITUATION=="2"`: escarpement
+- `SITUATION=="3"`: sommet
+- `SITUATION=="4"`: haut_pente
+- `SITUATION=="5"`: mi_pente
+- `SITUATION=="6"`: replat
+- `SITUATION=="7"`: bas_pente
+- `SITUATION=="8"`: depression_o
+- `SITUATION=="9"`: depression_f
 
 
 # Limitations
@@ -96,7 +123,8 @@ Pour résumé l'approche finale retenue dans les travaux d'Aurélie Chalumeau:
     - les précipitations (`PMA`);
     - la force de la pente (`FORCPENT`);
 
-2. Un K-means (classification non supervisée) utilisant les 10 premiers axes de la RDA, avec une augmentation progressive du nombre de groupe de 2 à 30 groupes, les indices utilisés sont:
+2. Un K-means (classification non supervisée) utilisant les 10 premiers axes de la RDA qui représente (`r round(sum(summary(res$rda)$cont$importance[2, 1:10])*100, 2)`% de l’inertie totale).
+`), avec une augmentation progressive du nombre de groupe de 2 à 30 groupes, les indices utilisés sont:
   - *simple structure index* (ssi),
   - *average silhouette width* (silhouette),
   - *total within sum of square* (wss).

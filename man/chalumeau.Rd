@@ -7,7 +7,7 @@
 \alias{getData}
 \title{Reproduce Chalumeau analysis}
 \usage{
-chalumeau(bc.exp = 1, fwd.sel = FALSE)
+chalumeau(bc.exp = 0.25, fwd.sel = FALSE)
 
 doRDA(env, spc, rda_formula = NULL, bc.exp = 1, fwd.sel = FALSE)
 
