@@ -13,4 +13,7 @@ domain_bio
 \description{
 Biological domains
 }
+\references{
+\url{https://www.donneesquebec.ca/recherche/fr/dataset/systeme-hierarchique-de-classification-ecologique-du-territoire}
+}
 \keyword{datasets}

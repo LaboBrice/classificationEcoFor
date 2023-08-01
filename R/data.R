@@ -38,8 +38,18 @@
 #' * `strate`
 "species_codes"
 
-
 #' Biological domains
 #'
 #' @format A sf object with 6 domains and 8 columns.
+#' @references
+#' <https://www.donneesquebec.ca/recherche/fr/dataset/systeme-hierarchique-de-classification-ecologique-du-territoire>
 "domain_bio"
+
+#' POE 
+#' 
+#' Point d'observation \u00e9cologique.
+#'
+#' @format A sf object with 28398 points and 43 columns.
+#' @references
+#' * <https://www.donneesquebec.ca/recherche/dataset/points-observation-ecologique/resource/f21dfb59-cf61-4c59-a051-b16435c58c15>, we used the layer `vue_pe_type_eco`.
+"poe_type_eco"

@@ -13,8 +13,7 @@ chalumeau <- function(bc.exp = 0.25, fwd.sel = FALSE) {
     form <- "matcom ~ ALTITUDE + TMA + PMA + HUMUS + HUMEPAI + FLAT_SLOPE + FORCPENT"
     output01 <- doRDA(inputdata$env, inputdata$spc, form, bc.exp, fwd.sel)
     output02 <- doKMeans(output01,
-        max_grp = 30, km_method = "cascade",
-        iter = 100, criterion = "ssi"
+        max_grp = 30, km_method = "cascade", iter = 100, criterion = "ssi"
     )
     output03 <- doKMeans(output01,
         max_grp = 30, km_method = "cascade", iter = 100, criterion = "calinski"
