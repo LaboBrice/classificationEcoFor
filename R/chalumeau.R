@@ -17,8 +17,7 @@ chalumeau <- function(bc.exp = 0.25, fwd.sel = FALSE) {
         iter = 100, criterion = "ssi"
     )
     output03 <- doKMeans(output01,
-        max_grp = 30, km_method = "cascade",
-        iter = 100, criterion = "calinski"
+        max_grp = 30, km_method = "cascade", iter = 100, criterion = "calinski"
     )
     output04 <- doKMeans(output01, max_grp = 30, km_method = "silhouette")
     return(
@@ -75,7 +74,7 @@ doRDA <- function(env, spc, rda_formula = NULL, bc.exp = 1, fwd.sel = FALSE) {
 #' @param km_method K-means method.
 #' @param ... Further argiments forwarded to [vegan::cascadeKM()].
 doKMeans <- function(res_rda, naxis = 10, max_grp = 30,
-                     km_method = c("cascade", "silhouette"), ...) {
+                     km_method = c("cascade", "silhouette", "wss"), ...) {
     cli_progress_step("Perform Kmeans ({km_method})")
     scr <- scores(res_rda,
         choices = seq_len(naxis), scaling = 1,
@@ -84,10 +83,14 @@ doKMeans <- function(res_rda, naxis = 10, max_grp = 30,
     km_method <- match.arg(km_method)
     if (km_method == "cascade") {
         cascadeKM(scr, inf.gr = 2, sup.gr = max_grp, ...)
-    } else {
+    } else if (km_method == "silhouette") {
         factoextra::fviz_nbclust(
             x = scr, FUNcluster = kmeans, method = "silhouette",
             k.max = max_grp
+        )
+    } else {
+        factoextra::fviz_nbclust(
+            x = scr, FUNcluster = kmeans, method = "wss", k.max = max_grp
         )
     }
 }

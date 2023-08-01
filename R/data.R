@@ -37,3 +37,9 @@
 #' * `latin`: latin name
 #' * `strate`
 "species_codes"
+
+
+#' Biological domains
+#'
+#' @format A sf object with 6 domains and 8 columns.
+"domain_bio"

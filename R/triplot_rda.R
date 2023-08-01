@@ -62,11 +62,11 @@ triplot_rda <- function(res_rda) {
     ) |>
         unique()
     sc_sp_slc <- sc_sp[slc, ]
-    text(sc_sp_slc + cbind(0.015, c(-0.02, 0.02)[1 + (sc_sp_slc[, 2] > 0) * 1]),
+    text(sc_sp_slc + cbind(0.015, c(-0.03, 0.03)[1 + (sc_sp_slc[, 2] > 0) * 1]),
         labels = rownames(sc_sp_slc),
         col = "grey30",
         font = 2, # bold
-        cex = 1
+        cex = 0.8
     )
     # add arrows for effects of the expanatory variables
     arrows(0, 0, # start them from (0,0)
@@ -77,10 +77,10 @@ triplot_rda <- function(res_rda) {
     # add text labels for arrows
     text(
         x = sc_bp[, 1],
-        y = sc_bp[, 2] + c(-0.03, 0.03)[1 + (sc_bp[, 2] > 0) * 1],
+        y = sc_bp[, 2] + c(-0.04, 0.04)[1 + (sc_bp[, 2] > 0) * 1],
         labels = rownames(sc_bp),
         col = "#c9386d",
-        cex = 1,
+        cex = 0.9,
         font = 2
     )
 

@@ -15,7 +15,7 @@ doKMeans(
   res_rda,
   naxis = 10,
   max_grp = 30,
-  km_method = c("cascade", "silhouette"),
+  km_method = c("cascade", "silhouette", "wss"),
   ...
 )
 
