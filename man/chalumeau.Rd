@@ -7,7 +7,7 @@
 \alias{getData}
 \title{Reproduce Chalumeau analysis}
 \usage{
-chalumeau(bc.exp = 1, fwd.sel = FALSE)
+chalumeau(bc.exp = 0.25, fwd.sel = FALSE)
 
 doRDA(env, spc, rda_formula = NULL, bc.exp = 1, fwd.sel = FALSE)
 
@@ -15,7 +15,7 @@ doKMeans(
   res_rda,
   naxis = 10,
   max_grp = 30,
-  km_method = c("cascade", "silhouette"),
+  km_method = c("cascade", "silhouette", "wss"),
   ...
 )
 

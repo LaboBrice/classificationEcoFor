@@ -14,9 +14,10 @@
 
 
 ```R
+install.packages("devtools")
+remotes::install_deps()
 devtools::build_vignettes()
 ```
-
 
 
 ## Export raw data 
@@ -28,7 +29,7 @@ source("inst/raw_data/formatRawData.R")
 
 ## Notes 
 
-Files where imported as data frames and then saved as `rda` files (R Data files), see `inst/rawdata/formatRawData.R`.
+Files were imported as data frames and then saved as `rda` files (R Data files), see `inst/rawdata/formatRawData.R`.
 
 - `classEcoFor::environ_var`: environment variables
 - `classEcoFor::plot_location`: sf object with all plot details
