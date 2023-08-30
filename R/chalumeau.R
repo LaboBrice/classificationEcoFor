@@ -35,6 +35,7 @@ chalumeau <- function(bc.exp = 0.25, fwd.sel = FALSE) {
 #' @param spc Species data.
 #' @param rda_formula RDA formula. Default is set to `NULL`, which means that
 #' all variables are used in the model.
+#' @export 
 doRDA <- function(env, spc, rda_formula = NULL, bc.exp = 1, fwd.sel = FALSE) {
     stopifnot(NROW(env) == NROW(spc))
     matcom <- spc |>
@@ -71,7 +72,8 @@ doRDA <- function(env, spc, rda_formula = NULL, bc.exp = 1, fwd.sel = FALSE) {
 #' @param naxis Number of axis.
 #' @param max_grp maximum number of groups.
 #' @param km_method K-means method.
-#' @param ... Further argiments forwarded to [vegan::cascadeKM()].
+#' @param ... Further arguments forwarded to [vegan::cascadeKM()].
+#' @export
 doKMeans <- function(res_rda, naxis = 10, max_grp = 30,
                      km_method = c("cascade", "silhouette", "wss"), ...) {
     cli_progress_step("Perform Kmeans ({km_method})")
@@ -95,7 +97,7 @@ doKMeans <- function(res_rda, naxis = 10, max_grp = 30,
 }
 
 
-#' @describeIn chalumeau Take raw data and return a list including all the data and the enviroenemtn data (scaled where needed) and the species data.
+#' @describeIn chalumeau Take raw data and return a list including all the data and the environment data (scaled where needed) and the species data.
 getData <- function() {
     cli_progress_step("Prepare data")
     on.exit(cli_progress_done())

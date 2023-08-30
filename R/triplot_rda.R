@@ -14,14 +14,13 @@ triplot_rda <- function(res_rda) {
     perc <- round(100 * (summary(res_rda)$cont$importance[2, 1:2]), 2)
 
     ## extract scores - these are coordinates in the RDA space
-    sc_si <- scores(res_rda, display = "sites", choices = c(1, 2), scaling = 2)
+    sc_si <- scores(res_rda, display = "sites", choices = c(1, 2))
     sc_sp <- scores(
         res_rda,
         display = "species",
         choices = c(1, 2),
-        scaling = 2
     )
-    sc_bp <- scores(res_rda, display = "bp", choices = c(1, 2), scaling = 2)
+    sc_bp <- scores(res_rda, display = "bp", choices = c(1, 2))
 
     ## Custom triplot, step by step
 
@@ -31,8 +30,8 @@ triplot_rda <- function(res_rda) {
         type = "none", # this excludes the plotting of any points from the results
         frame = FALSE,
         # set axis limits
-        xlim = c(-1, 1),
-        ylim = c(-1, 1),
+        xlim = c(-2, 2),
+        ylim = c(-2, 2),
         # label the plot (title, and axes)
         main = paste0(
             "Triplot RDA (scaling: 2, R2-adj: ",
@@ -68,7 +67,7 @@ triplot_rda <- function(res_rda) {
         font = 2, # bold
         cex = 0.8
     )
-    # add arrows for effects of the expanatory variables
+    # add arrows for effects of the explanatory variables
     arrows(0, 0, # start them from (0,0)
         sc_bp[, 1], sc_bp[, 2], # end them at the score value
         col = "#c9386d",

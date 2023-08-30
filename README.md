@@ -22,6 +22,7 @@ devtools::build_vignettes()
 
 ## Export raw data 
 
+
 ```R
 source("inst/raw_data/formatRawData.R")
 ```
@@ -29,10 +30,8 @@ source("inst/raw_data/formatRawData.R")
 
 ## Notes 
 
-Files were imported as data frames and then saved as `rda` files (R Data files), see `inst/rawdata/formatRawData.R`.
+Data were imported (some data sets have been transformed) and then saved as `rda` files (R Data files), see `inst/rawdata/formatRawData.R`. The following command list all datasets available in the package.
 
-- `classEcoFor::environ_var`: environment variables
-- `classEcoFor::plot_location`: sf object with all plot details
-- `classEcoFor::climatic_var`: climatic variables
-- `classEcoFor::species_var`: species variables
-
+```R
+data(package = "classEcoFor")
+```
