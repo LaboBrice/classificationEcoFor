@@ -2,6 +2,8 @@
 
 export(boxCoxChord)
 export(chalumeau)
+export(doKMeans)
+export(doRDA)
 export(triplot_rda)
 importFrom(cli,cli_alert_warning)
 importFrom(cli,cli_progress_done)

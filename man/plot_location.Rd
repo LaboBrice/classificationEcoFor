@@ -12,7 +12,7 @@ A sf object with 12,731 points and 6 fields (columns):
 \item ``LATITUDE`:
 \item ``wc20bio30s0`:
 \item ``wc20bio30s1`:
-\item ``TMA`: Temperature annuelle moyenne
+\item ``TMA`: Mean annual temperature
 }
 }
 \usage{

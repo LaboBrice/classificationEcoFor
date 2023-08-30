@@ -41,7 +41,7 @@ all variables are used in the model.}
 
 \item{km_method}{K-means method.}
 
-\item{...}{Further argiments forwarded to \code{\link[vegan:cascadeKM]{vegan::cascadeKM()}}.}
+\item{...}{Further arguments forwarded to \code{\link[vegan:cascadeKM]{vegan::cascadeKM()}}.}
 }
 \description{
 Reproduce Chalumeau analysis
@@ -52,7 +52,7 @@ Reproduce Chalumeau analysis
 
 \item \code{doKMeans()}: Perform K means.
 
-\item \code{getData()}: Take raw data and return a list including all the data and the enviroenemtn data (scaled where needed) and the species data.
+\item \code{getData()}: Take raw data and return a list including all the data and the environment data (scaled where needed) and the species data.
 
 }}
 \examples{

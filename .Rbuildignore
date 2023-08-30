@@ -3,3 +3,5 @@
 ^doc$
 ^docs$
 ^Meta$
+^inst/raw_data$
+^\.vscode$

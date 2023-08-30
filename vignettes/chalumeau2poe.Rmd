@@ -1,0 +1,128 @@
+---
+title: "Appliquer l'approche de Chalumeau et al. au POE"
+output: 
+  rmarkdown::html_vignette:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{Reproducing Chalumeau et al.}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+library(classEcoFor)
+library(dplyr)
+library(mapview)
+library(vegan)
+library(sf)
+```
+
+Ici, nous appliquons la méthode de Chalumeau et al. sur l'ensemble des POE. 
+
+# RDA 
+
+```{R poe, include = FALSE}
+spc_nm <- names(poe_species |> dplyr::select(-id_poe)) 
+# Remove "FEU_R" "FEU_H" "RES_S" "FEU_S" "CLA_S"
+spc_nm <- spc_nm[nchar(spc_nm) == 3]
+var_nm <- names(poe_env)[!names(poe_env) %in% c("id_poe", "geom", "deposit_type", "potential_vegetation")]
+poe <- inner_join(poe_env, poe_species) |> 
+  sf::st_drop_geometry()  |>
+  as.data.frame()  |>
+  na.omit()  |>
+  mutate(slope_type = as.factor(slope_type)) |>
+  mutate(humus_type = as.factor(humus_type)) |>
+  mutate(deposit_group = as.factor(deposit_group))
+# dim(poe)
+```
+
+## RDA sans variables de sol 
+
+```{R rda1, fig.width = 8, fig.height = 8, echo = FALSE}
+res_rda1 <- doRDA(
+  poe[var_nm[!var_nm  %in% c("mo_thickness", "humus_type", "deposit_group")]], 
+  poe[spc_nm]
+)
+triplot_rda(res_rda1)
+```
+
+## RDA avec toutes les variables sauf les dépots
+
+```{R rda2, fig.width = 8, fig.height = 8, echo = FALSE}
+res_rda2 <- doRDA(
+  poe[var_nm[!var_nm  %in% c("deposit_group")]], 
+  poe[spc_nm]
+)
+triplot_rda(res_rda2)
+```
+
+
+## RDA avec toutes les variables
+
+```{R rda3, fig.width = 8, fig.height = 8, echo = FALSE}
+res_rda3 <- doRDA(poe[var_nm], poe[spc_nm])
+triplot_rda(res_rda3)
+```
+
+
+# K-means
+
+```{R kmean, fig.width = 8, fig.height = 8, echo = FALSE}
+res_kmean <- doKMeans(res_rda3,
+   max_grp = 30, km_method = "cascade", iter = 50, criterion = "calinski"
+ )
+plot(res_kmean)
+```
+
+
+
+# Composition et distribution des 9 groupes obtenus
+
+
+```{R maps, results = "asis", fig.height = 5, fig.width = 7, warning = FALSE, message = FALSE, echo = FALSE}
+poe_env_groups  <- cbind(poe, res_kmean$partition  |> as.data.frame())
+for (j in 5:20) {
+  cat("<h3> Kmean with ", j, " groups</h2>\n\n")
+  tmp <- poe_env_groups[c("id_poe", paste0(j, " groups"))] |>
+    dplyr::rename(grp = paste0(j, " groups"))
+  geom_grp <- dplyr::inner_join(poe_env, tmp)
+
+  for (i in seq(1, j)) {
+    cat("<h3> Groupe ", i, "</h3>\n\n")
+    par(mfrow = c(1, 2), mar = c(4, 4, 1, 1))
+    compo <- poe_env_groups |>
+      filter(!!sym(paste0(j, " groups")) == i) |>
+      dplyr::select(c(all_of(spc_nm), paste0(j, " groups"))) |>
+      group_by(!!sym(paste0(j, " groups"))) |>
+      summarise_at(all_of(spc_nm), mean) |>
+      as.vector() |>
+      unlist() |>
+      sort() |>
+      rev()
+    plot(compo[1:15],
+      type = "h", lwd = 5, axes = FALSE, lend = 1,
+      ylab = "Recouvrement moyen", xlab = ""
+    )
+    axis(2, las = 2)
+    axis(1, at = 1:15, labels = names(compo[1:15]), las = 2)
+    box(bty = "l")
+
+    par(mar = c(0, 0, 1, 0))
+    plot(domain_bio |> st_geometry())
+    plot(
+      geom_grp |>
+        filter(grp == i) |>
+        st_geometry(),
+      add = TRUE,
+      pch = 19,
+      col = "steelblue",
+      cex = 0.7
+    )
+  }
+}
+```
+
