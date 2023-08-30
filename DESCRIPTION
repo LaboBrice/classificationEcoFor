@@ -9,15 +9,13 @@ Description: Code to reproduce the anlaysis by Chalumeau and colleagues.
 Depends: R (>= 4.2)
 Imports: 
     cli,
-    cluster,
     dplyr,
     factoextra,
     sf,
     stats,
-    terra,
-    tmap,
     vegan
 Suggests:
+    cluster,
     corrplot,
     foreign,
     geodata,
@@ -25,6 +23,7 @@ Suggests:
     mapview,
     rmarkdown,
     targets,
+    terra,
     tidyr
 License: MIT + file LICENSE
 Encoding: UTF-8

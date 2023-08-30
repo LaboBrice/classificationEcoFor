@@ -1,3 +1,7 @@
+# classEcoFor (0.3.0)
+
+* Add POE data and apply Chalumeau approach to POE. 
+
 # classEcoFor (0.2.0)
 
 * Complete reproduction of Chalumeau et al. 
