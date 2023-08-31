@@ -4,6 +4,10 @@ docs
 .Rapp.history
 resources
 .vscode
+## large files
+inst/raw_data/POE_PROV.gpkg
+inst/raw_data/mly60arcsecond_1990to1999
+inst/raw_data/gadm
 
 # Session Data files
 .RData
