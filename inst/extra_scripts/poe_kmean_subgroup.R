@@ -1,53 +1,29 @@
-# See vignette
+# Same as poe_kmean_by_dir but I group
 devtools::load_all()
 library(dplyr)
 library(corrplot)
 library(ggplot2)
+dir.create("tmp/res_2bs", recursive = TRUE, showWarnings = FALSE)
 
 
 spc_nm <- names(poe_species |> dplyr::select(-id_poe))
 # Remove "FEU_R" "FEU_H" "RES_S" "FEU_S" "CLA_S"
 spc_nm <- spc_nm[nchar(spc_nm) == 3]
-var_nm <- names(poe_env)[!names(poe_env) %in% c("id_poe", "geom", "deposit_type", "potential_vegetation")]
+var_nm <- names(poe_env)[!names(poe_env) %in% c("id_poe", "geom", "deposit_type", "deposit_group", "potential_vegetation")]
 poe <- inner_join(poe_env, poe_species) |>
   sf::st_drop_geometry() |>
   as.data.frame() |>
   na.omit() |>
   mutate(slope_type = as.factor(slope_type)) |>
   mutate(humus_type = as.factor(humus_type)) |>
-  mutate(deposit_group = as.factor(deposit_group))
+  filter(deposit_group == "2Bs")
 
 res_rda3 <- doRDA(poe[var_nm], poe[spc_nm])
 # triplot_rda(res_rda3)
 res_kmean <- doKMeans(res_rda3,
   max_grp = 40, km_method = "cascade", iter = 100, criterion = "calinski"
 )
-saveRDS(res_kmean, file = "res_kmean.rds")
-
-
-for (j in 20:40) {
-  fld <- sprintf("tmp/kmean%02d", j)
-  dir.create(fld, recursive = TRUE, showWarnings = FALSE)
-
-  sc  <- scores(res_rda3,
-    choices = seq_len(10), scaling = 1, display = c("lc")
-  )
-  vr_gp <- paste0(j, " groups")
-  tmp <- cbind(
-    sc,
-    res_kmean$partition |> as.data.frame()  |> select(!!sym(vr_gp)) 
-  )  |>
-    as.data.frame()  |>
-    group_by(!!sym(vr_gp)) |>
-    summarise_all(mean) 
-  png(file.path(fld, sprintf("plot_rda_group%02d.png", j)),
-      units = "in",
-      height = 18, width = 15, res = 300
-    )
-  triplot_rda(res_rda3)
-  text(tmp$RDA1*20, tmp$RDA2*20, seq_len(j), cex = 1.6, col = "#81bc1a", pch = 17)
-  dev.off()
-}
+saveRDS(res_kmean, file = "tmp/res_2bs/res_kmean_sub.rds")
 
 poe_env_groups <- cbind(poe, res_kmean$partition |> as.data.frame())
 
@@ -60,9 +36,9 @@ cov_spc  <-  poe_species |>
 spc_nm_50 <- names(cov_spc)[nchar(names(cov_spc)) == 3][1:50]
 
 
-for (j in 20:40) {
-  cat("----------------> group ", j)
-  fld <- sprintf("tmp/kmean%02d", j)
+for (j in 2:30) {
+  cat("----------------> group ", j, "\n")
+  fld <- sprintf("tmp/res_2bs/kmean%02d", j)
   dir.create(fld, recursive = TRUE, showWarnings = FALSE)
   vr_gp <- paste0(j, " groups")
   tmp <- poe_env_groups[c("id_poe", vr_gp)] |>
@@ -126,8 +102,8 @@ for (j in 20:40) {
     ggsave(file.path(fld, sprintf("plotenv_group%02d_%s.png", j, var_qtt[i])))
   }
 
-  var_qlt <- c("slope_type", "humus_type", "deposit_group")
-  titl <- c("Type de pente", "Type d'Humus", "Type de dépôt surfacique")
+  var_qlt <- c("slope_type", "deposit_group")
+  titl <- c("Type de pente", "Type de dépôt surfacique")
   dat <- poe_env_groups |>
     dplyr::select(all_of(var_qlt), vr_gp)
   for (i in seq(var_qlt)) {
