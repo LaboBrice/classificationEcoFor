@@ -15,7 +15,6 @@ poe <- inner_join(poe_env, poe_species) |>
     mutate(humus_type = as.factor(humus_type)) |>
     mutate(deposit_group = as.factor(deposit_group))
 
-
 ls_exc <- list(
     c("humus_type", "mo_thickness", "deposit_group"),
     c("deposit_group"),
@@ -27,14 +26,13 @@ for (i in seq(ls_exc)) {
     print(var_nm2)
     res_rda <- doRDA(poe[var_nm2], poe[spc_nm])
     sc_sp <- scores(res_rda, display = "species", choices = c(1, 2))
-    write.csv(sc_si,
+    write.csv(sc_sp,
         file = sprintf("%s/fichier%da.csv", fld, i),
-        row.names = FALSE
+        row.names = TRUE
     )
-    sc_bp <- scores(res_rda, display = "bp", choices = c(1, 2),
-    )
+    sc_bp <- scores(res_rda, display = "bp", choices = c(1, 2))
     write.csv(sc_bp,
         file = sprintf("%s/fichier%db.csv", fld, i),
-        row.names = FALSE
+        row.names = TRUE
     )
 }

@@ -4,6 +4,7 @@ docs
 .Rapp.history
 resources
 .vscode
+tmp
 ## large files
 inst/raw_data/POE_PROV.gpkg
 inst/raw_data/mly60arcsecond_1990to1999
