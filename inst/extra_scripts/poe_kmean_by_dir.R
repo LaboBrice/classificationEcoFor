@@ -5,8 +5,11 @@ library(corrplot)
 library(ggplot2)
 
 
+dir.create("tmp/centroids", showWarnings = FALSE, recursive = TRUE)
+
+# Perform Kmeans
 spc_nm <- names(poe_species |> dplyr::select(-id_poe))
-# Remove "FEU_R" "FEU_H" "RES_S" "FEU_S" "CLA_S"
+## Remove "FEU_R" "FEU_H" "RES_S" "FEU_S" "CLA_S"
 spc_nm <- spc_nm[nchar(spc_nm) == 3]
 var_nm <- names(poe_env)[!names(poe_env) %in% c("id_poe", "geom", "deposit_type", "potential_vegetation")]
 poe <- inner_join(poe_env, poe_species) |>
@@ -22,10 +25,12 @@ res_rda3 <- doRDA(poe[var_nm], poe[spc_nm])
 res_kmean <- doKMeans(res_rda3,
   max_grp = 40, km_method = "cascade", iter = 100, criterion = "calinski"
 )
-saveRDS(res_kmean, file = "res_kmean.rds")
+saveRDS(res_kmean, file = "tmp/res_kmean.rds")
 
 
+# Generate RDA plots
 for (j in 20:40) {
+  cli::cli_alert_info("j = {j}")
   fld <- sprintf("tmp/kmean%02d", j)
   dir.create(fld, recursive = TRUE, showWarnings = FALSE)
 
@@ -35,11 +40,17 @@ for (j in 20:40) {
   vr_gp <- paste0(j, " groups")
   tmp <- cbind(
     sc,
-    res_kmean$partition |> as.data.frame()  |> select(!!sym(vr_gp)) 
+    res_kmean$partition |> as.data.frame() |> select(!!sym(vr_gp)) 
   )  |>
-    as.data.frame()  |>
+    as.data.frame() |>
     group_by(!!sym(vr_gp)) |>
     summarise_all(mean) 
+  # write centroids coordinates
+  write.csv(
+    tmp,
+    sprintf("tmp/centroids/kmean_centroids%02d.csv", j), 
+    row.names = FALSE
+  )
   png(file.path(fld, sprintf("plot_rda_group%02d.png", j)),
       units = "in",
       height = 18, width = 15, res = 300
@@ -49,7 +60,14 @@ for (j in 20:40) {
   dev.off()
 }
 
+
+# 
 poe_env_groups <- cbind(poe, res_kmean$partition |> as.data.frame())
+# save id_poe x kmeans_group
+cbind(poe[1], res_kmean$partition) |> 
+  as.data.frame()  |>
+  write.csv("tmp/id_poe_kmeans_groups.csv")
+
 
 # Fifty first species 
 cov_spc  <-  poe_species |>
@@ -81,7 +99,7 @@ for (j in 20:40) {
     cl.ratio = 2.4 / (j),
     addCoef.col = "black",
     cl.align.text = "l",
-    title = "Groupe de k-mean vs végétation potentielles"
+    title = "Groupe de k-mean vs végétation potentielle"
   )
   dev.off()
 
@@ -104,7 +122,7 @@ for (j in 20:40) {
       cl.ratio = 2.4 / (j),
       addCoef.col = "black",
       cl.align.text = "l",
-      title = "Groupe de k-mean vs couverture des espèces"
+      title = "Groupe de k-means vs couverture des espèces"
     )
   dev.off()
 

@@ -9,7 +9,7 @@
 #' @export
 #'
 
-triplot_rda <- function(res_rda) {
+triplot_rda <- function(res_rda, xlim = c(-2, 2), ylim = c(-2, 2)) {
     ## extract % explained by the first 2 axes
     perc <- round(100 * (summary(res_rda)$cont$importance[2, 1:2]), 2)
 
@@ -30,9 +30,9 @@ triplot_rda <- function(res_rda) {
         type = "none", # this excludes the plotting of any points from the results
         frame = FALSE,
         # set axis limits
-        xlim = c(-2, 2),
-        ylim = c(-2, 2),
-        # label the plot (title, and axes)
+        xlim = xlim,
+        ylim = ylim,
+        # labelythe plot (title, and axes)
         main = paste0(
             "Triplot RDA (scaling: 2, R2-adj: ",
             100 * round(RsquareAdj(res_rda)$adj.r.squared, 4),

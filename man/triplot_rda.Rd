@@ -4,7 +4,7 @@
 \alias{triplot_rda}
 \title{Custom rda triplot}
 \usage{
-triplot_rda(res_rda)
+triplot_rda(res_rda, xlim = c(-2, 2), ylim = c(-2, 2))
 }
 \arguments{
 \item{res_rda}{a rda object}

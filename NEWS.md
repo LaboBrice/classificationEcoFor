@@ -1,6 +1,7 @@
 # classEcoFor (0.3.0)
 
 * Add POE data and apply Chalumeau approach to POE. 
+* Add script to write results.
 
 # classEcoFor (0.2.0)
 
