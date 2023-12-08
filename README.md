@@ -56,6 +56,7 @@ Les fonctions se trouvent dans le dossier `R`. Notez que toutes les fonctions du
 
 Les scripts dans le dossier `inst/extra_scripts` permettent de faire des analyses et figures supplémentaires:
 
+- `poe_kmean_final_figs.R`: ce script permet de produire toutes les figures ci-bas en version finale. En définissant un `set.seed()`, ça permet d'obtenir toujours les mêmes résultats du k-means. Les figures et résultats sont enregistrés dans le dossier `res_final`.
 - `poe_kmean_by_dir.R`: ce script permet de faire les étapes d'analyses de la classification, soit la RDA puis les groupements k-means pour `k = 20 à 40` groupes puis de créer des figures dans le dossier `tmp`: 
     - carte des POE et barplot des abondances d'espèces pour chaque groupe
     - triplot de la RDA avec les groupes

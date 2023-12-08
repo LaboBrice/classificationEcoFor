@@ -1,6 +1,7 @@
 #' Custom rda triplot
 #'
 #' @param res_rda a rda object
+#' @param sites if TRUE display sites in the triplot
 #'
 #' @references
 #' Code borrowed and adapted from:
@@ -9,7 +10,9 @@
 #' @export
 #'
 
-triplot_rda <- function(res_rda, xlim = c(-2, 2), ylim = c(-2, 2)) {
+triplot_rda <- function(
+    res_rda, sites = TRUE,
+    xlim = c(-2, 2), ylim = c(-2, 2)) {
     ## extract % explained by the first 2 axes
     perc <- round(100 * (summary(res_rda)$cont$importance[2, 1:2]), 2)
 
@@ -42,12 +45,15 @@ triplot_rda <- function(res_rda, xlim = c(-2, 2), ylim = c(-2, 2)) {
         ylab = paste0("RDA2 (", perc[2], "%)")
     )
     # add points for site scores
-    points(sc_si,
-        pch = 21, # set shape (here, circle with a fill colour)
-        col = "transparent", # outline colour
-        bg = "steelblue", # fill colour
-        cex = 0.3
-    ) # size
+    if (sites) {
+        points(sc_si,
+            pch = 21, # set shape (here, circle with a fill colour)
+            col = "transparent", # outline colour
+            bg = "steelblue", # fill colour
+            cex = 0.3
+        ) # size
+    }
+
     # add points for species scores
     points(sc_sp,
         pch = 22, # set shape (here, square with a fill colour)
@@ -71,7 +77,8 @@ triplot_rda <- function(res_rda, xlim = c(-2, 2), ylim = c(-2, 2)) {
     arrows(0, 0, # start them from (0,0)
         sc_bp[, 1], sc_bp[, 2], # end them at the score value
         col = "#c9386d",
-        lwd = 3
+        lwd = 3,
+        length = 0.1
     )
     # add text labels for arrows
     text(

@@ -35,7 +35,7 @@ chalumeau <- function(bc.exp = 0.25, fwd.sel = FALSE) {
 #' @param spc Species data.
 #' @param rda_formula RDA formula. Default is set to `NULL`, which means that
 #' all variables are used in the model.
-#' @export 
+#' @export
 doRDA <- function(env, spc, rda_formula = NULL, bc.exp = 1, fwd.sel = FALSE) {
     stopifnot(NROW(env) == NROW(spc))
     matcom <- spc |>
@@ -71,10 +71,12 @@ doRDA <- function(env, spc, rda_formula = NULL, bc.exp = 1, fwd.sel = FALSE) {
 #' @param res_rda RDA output.
 #' @param naxis Number of axis.
 #' @param max_grp maximum number of groups.
+#' @param min_grp minimum number of groups.
 #' @param km_method K-means method.
 #' @param ... Further arguments forwarded to [vegan::cascadeKM()].
 #' @export
-doKMeans <- function(res_rda, naxis = 10, max_grp = 30,
+doKMeans <- function(res_rda, naxis = 10,
+                     min_grp = 2, max_grp = 30,
                      km_method = c("cascade", "silhouette", "wss"), ...) {
     cli_progress_step("Perform Kmeans ({km_method})")
     scr <- scores(res_rda,
@@ -83,7 +85,7 @@ doKMeans <- function(res_rda, naxis = 10, max_grp = 30,
     )
     km_method <- match.arg(km_method)
     if (km_method == "cascade") {
-        cascadeKM(scr, inf.gr = 2, sup.gr = max_grp, ...)
+        cascadeKM(scr, inf.gr = min_grp, sup.gr = max_grp, ...)
     } else if (km_method == "silhouette") {
         factoextra::fviz_nbclust(
             x = scr, FUNcluster = kmeans, method = "silhouette",
@@ -138,7 +140,7 @@ prepareData <- function() {
             classEcoFor::climatic_var,
             by = join_by(CLE_ECO)
         ) |>
-        # this is the only situation value used in Chalumeau et al. 
+        # this is the only situation value used in Chalumeau et al.
         # we create an adhoc variable instead of including all SITUATION values
         mutate(FLAT_SLOPE = (SITUATION == 0) * 1) |>
         left_join(classEcoFor::species_var, by = join_by(CLE_ECO))

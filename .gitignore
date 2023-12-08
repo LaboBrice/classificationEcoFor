@@ -5,6 +5,7 @@ docs
 resources
 .vscode
 tmp
+res_final
 ## large files
 inst/raw_data/POE_PROV.gpkg
 inst/raw_data/mly60arcsecond_1990to1999
