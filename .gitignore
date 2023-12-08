@@ -28,6 +28,9 @@ inst/raw_data/gadm
 # RStudio files
 .Rproj.user/
 
+# Mac stuff
+.DS_Store
+
 # produced vignettes
 vignettes/*.html
 vignettes/*.pdf

@@ -97,7 +97,7 @@ doKMeans <- function(res_rda, naxis = 10, max_grp = 30,
 }
 
 
-#' @describeIn chalumeau Take raw data and return a list including all the data and the environment data (scaled where needed) and the species data.
+#' @describeIn chalumeau Take raw data and return a list including all the data and the environmental data (scaled where needed) and the species data.
 getData <- function() {
     cli_progress_step("Prepare data")
     on.exit(cli_progress_done())
